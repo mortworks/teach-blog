@@ -1,0 +1,4 @@
+{
+  "name": "Teach Blog Codespace",
+  "postCreateCommand": "~/dotfiles/install.sh"
+}
