@@ -23,12 +23,11 @@ jobs:
           extended: true
 
       - name: Build site
-        working-directory: site
         run: hugo --minify
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           personal_token: ${{ secrets.GH_PAT }}
-          publish_dir: site/public
+          publish_dir: ./public
           publish_branch: gh-pages
