@@ -40,11 +40,11 @@ ehthumbs.db
 Thumbs.db
 
 # ---------------------------------------
-# Hugo build artefacts (inside /site)
+# Hugo build artefacts (flattened structure)
 # ---------------------------------------
-/site/public/
-/site/resources/
-/site/.hugo_build.lock
+/public/
+/resources/
+/.hugo_build.lock
 
 # ---------------------------------------
 # Environment files and secrets
