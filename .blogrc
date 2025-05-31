@@ -1,2 +1,3 @@
 # teach-blog/.blogrc
-CONTENT_DIR="$(git rev-parse --show-toplevel)/site/content/posts"
+CONTENT_DIR="$BLOG_ROOT/content/posts"
+DRAFT_DIR="$BLOG_ROOT/_drafts"
