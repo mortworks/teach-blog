@@ -1,0 +1,6 @@
++++
+title = "Poem for the end of the school year: 'An Advancement of Learning' by Seamus Heaney"
+date = "2025-06-22T12:27:36"
+draft = true
+slug = "advancement-of-learning-end-of-year"
++++
