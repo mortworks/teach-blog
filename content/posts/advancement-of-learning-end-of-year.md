@@ -4,3 +4,4 @@ date = "2025-06-22T12:27:36"
 draft = true
 slug = "advancement-of-learning-end-of-year"
 +++
+{{< scaffold "scaffolds/paragraph-structure-heaney-ks3" >}}
