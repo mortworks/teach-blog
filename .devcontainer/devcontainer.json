@@ -1,4 +1,7 @@
 {
   "name": "Teach Blog Codespace",
-  "postCreateCommand": "~/dotfiles/install.sh"
+  "postCreateCommand": "~/dotfiles/install.sh",
+  "settings": {
+    "terminal.integrated.defaultProfile.linux": "zsh"
+  }
 }
