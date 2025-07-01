@@ -6,8 +6,15 @@
     <description>Recent content in All Posts on PWM Teach-Blog</description>
     <generator>Hugo -- 0.144.1</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 22 Jun 2025 12:27:36 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 30 Jun 2025 11:36:45 +0000</lastBuildDate>
     <atom:link href="http://localhost:1313/teach-blog/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>YAML test</title>
+      <link>http://localhost:1313/teach-blog/posts/yaml-test/</link>
+      <pubDate>Mon, 30 Jun 2025 11:36:45 +0000</pubDate>
+      <guid>http://localhost:1313/teach-blog/posts/yaml-test/</guid>
+      <description></description>
+    </item>
     <item>
       <title>Poem for the end of the school year: &#39;An Advancement of Learning&#39; by Seamus Heaney</title>
       <link>http://localhost:1313/teach-blog/posts/advancement-of-learning-end-of-year/</link>

@@ -6,8 +6,15 @@
     <description>Recent content in Home on PWM Teach-Blog</description>
     <generator>Hugo -- 0.144.1</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 22 Jun 2025 12:27:36 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 30 Jun 2025 11:36:45 +0000</lastBuildDate>
     <atom:link href="http://localhost:1313/teach-blog/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>YAML test</title>
+      <link>http://localhost:1313/teach-blog/posts/yaml-test/</link>
+      <pubDate>Mon, 30 Jun 2025 11:36:45 +0000</pubDate>
+      <guid>http://localhost:1313/teach-blog/posts/yaml-test/</guid>
+      <description></description>
+    </item>
     <item>
       <title>Poem for the end of the school year: &#39;An Advancement of Learning&#39; by Seamus Heaney</title>
       <link>http://localhost:1313/teach-blog/posts/advancement-of-learning-end-of-year/</link>
@@ -82,21 +89,11 @@ Can you identify a moment of transformation or confrontation?&lt;/p&gt;</descrip
       <description>&lt;p&gt;Some stuff about me&lt;/p&gt;</description>
     </item>
     <item>
-      <title></title>
+      <title>Basic analytical paragraph scaffold</title>
       <link>http://localhost:1313/teach-blog/scaffolds/paragraph-structure-heaney-ks3/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       <guid>http://localhost:1313/teach-blog/scaffolds/paragraph-structure-heaney-ks3/</guid>
-      <description>&lt;p&gt;title = &amp;ldquo;Basic analytical paragraph scaffold&amp;rdquo;
-description = &amp;ldquo;A core structure for writing analytical paragraphs using the WHAT / HOW / WHY method, suitable for poetry or prose.&amp;rdquo;
-version = &amp;ldquo;1.0&amp;rdquo;
-draft = false&lt;/p&gt;
-&lt;h1 id=&#34;helpful-for-filtering-metadata-or-ui-displays&#34;&gt;Helpful for filtering, metadata, or UI displays&lt;/h1&gt;
-&lt;p&gt;level = &amp;ldquo;intro&amp;rdquo;
-age_range = &amp;ldquo;KS3&amp;rdquo;&lt;/p&gt;
-&lt;h1 id=&#34;seo-search-tag-filters&#34;&gt;SEO, search, tag filters&lt;/h1&gt;
-&lt;p&gt;keywords = [&amp;ldquo;poetry&amp;rdquo;, &amp;ldquo;paragraph&amp;rdquo;, &amp;ldquo;scaffold&amp;rdquo;, &amp;ldquo;analysis&amp;rdquo;, &amp;ldquo;KS3&amp;rdquo;, &amp;ldquo;literary response&amp;rdquo;]&lt;/p&gt;
-&lt;h1 id=&#34;optional-helps-if-you-ever-rename-slugs-or-reorganise-scaffolds&#34;&gt;Optional: helps if you ever rename slugs or reorganise scaffolds&lt;/h1&gt;
-&lt;p&gt;aliases = [&amp;quot;/scaffolds/para-structure-basic/&amp;quot;, &amp;ldquo;/scaffolds/paragraph-writing/&amp;rdquo;]&lt;/p&gt;</description>
+      <description>A core structure for writing analytical paragraphs using the WHAT / HOW / WHY method, suitable for poetry or prose.</description>
     </item>
   </channel>
 </rss>
