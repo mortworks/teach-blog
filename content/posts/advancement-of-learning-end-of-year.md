@@ -5,6 +5,7 @@ draft: true
 slug: advancement-of-learning-end-of-year
 layout: lesson
 
+Test text
 structure:
   - type: text
     ref: intro-commentary
