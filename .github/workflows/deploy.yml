@@ -3,7 +3,7 @@ name: Deploy Hugo site to GitHub Pages
 on:
   push:
     branches:
-      - main  # Trigger deploys only on push to main
+      - main  # Trigger deploy on push to main
 
 jobs:
   deploy:
@@ -13,8 +13,8 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          submodules: true  # Required if you're using a theme via git submodule
-          fetch-depth: 0    # Ensures full Git history (helps with Hugo/gh-pages)
+          submodules: true  # Required for themes using submodules
+          fetch-depth: 0    # Needed for full history and .Lastmod
 
       - name: Setup Hugo
         uses: peaceiris/actions-hugo@v2
@@ -25,7 +25,7 @@ jobs:
       - name: Build site
         run: |
           hugo --minify
-          touch public/.nojekyll
+          touch public/.nojekyll  # Ensure GitHub Pages disables Jekyll
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
@@ -33,3 +33,4 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./public
           publish_branch: gh-pages
+          # ✅ We *omit* exclude_assets so that CSS and theme assets are included
