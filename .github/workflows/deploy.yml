@@ -24,7 +24,7 @@ jobs:
 
       - name: Build site
         run: |
-          hugo --minify --config hugo.yaml
+          hugo --minify
           touch public/.nojekyll
 
       - name: Deploy to GitHub Pages
@@ -33,4 +33,3 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./public
           publish_branch: gh-pages
-          force_orphan: true
