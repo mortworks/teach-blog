@@ -1,5 +1,5 @@
-+++
-title = "Home"
-+++
+---
+title: "Home"
+---
 
 Welcome to my teaching resources site.
