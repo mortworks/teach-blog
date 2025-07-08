@@ -1,4 +1,7 @@
-{{ $published := .Params.published | time }}
+{{ $published := .Date }}
+{{ with .Params.published }}
+  {{ $published = time . }}
+{{ end }}
 {{ $lastmod := .Lastmod }}
 
 <p class="post-meta">
@@ -10,3 +13,4 @@
     🔄 Updated: {{ $lastmod.Format "02–01–2006" }}
   </p>
 {{ end }}
+
