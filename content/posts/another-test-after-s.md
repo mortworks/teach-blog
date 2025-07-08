@@ -14,6 +14,7 @@ anchors:
   - closing-thoughts
 title: Another test after STOPWORDS patch
 date: 2025-07-02T16:10:44
+published: 2025-07-02T16:10:44
 draft: true
 slug: another-test-after-stopwords-patch
 ---
