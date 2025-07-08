@@ -2,9 +2,7 @@
 <article class="lesson-post">
 
   <h1>{{ .Title }}</h1>
-  {{ if .Params.date }}
-    <p><em>{{ .Date.Format "2 January 2006" }}</em></p>
-  {{ end }}
+  {{ partial "metadata/main.html" . }}
 
   {{ $content := .RawContent }}
 

@@ -1,0 +1,12 @@
+{{ $published := or (.Params.published | time) .Date }}
+{{ $lastmod := .Lastmod }}
+
+<p class="post-meta">
+  📅 Published: {{ $published.Format "02–01–2006" }}
+</p>
+
+{{ if gt (sub $lastmod.Unix $published.Unix) (mul 30 86400) }}
+  <p class="post-meta">
+    🔄 Updated: {{ $lastmod.Format "02–01–2006" }}
+  </p>
+{{ end }}
