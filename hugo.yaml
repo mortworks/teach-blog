@@ -4,6 +4,7 @@ title: "PWM Teach-Blog"
 theme: "PaperMod"
 
 params:
+  DateFormat: "2 January 2006"
   showPostNavLinks: true
   showReadingTime: true
   showToc: true
