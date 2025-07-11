@@ -1,0 +1,38 @@
+{{ $content := .RawContent }}
+{{ range .Params.structure }}
+  {{ $type := .type }}
+  {{ $ref := .ref }}
+
+  {{ if eq $type "text" }}
+    {{ $marker := printf "<!-- %s -->" $ref }}
+    {{ $split := split $content $marker }}
+    {{ if ge (len $split) 2 }}
+      <div class="composite-block composite-text post-content">
+        {{ index $split 1 | markdownify }}
+      </div>
+    {{ else }}
+      <div class="missing-block">⚠️ Marker not found for <code>{{ $ref }}</code></div>
+    {{ end }}
+
+  {{ else if eq $type "scaffold" }}
+    {{ $scaffold := site.GetPage (printf "scaffolds/%s" $ref) }}
+    {{ if $scaffold }}
+      <div class="composite-block scaffold-block post-content">
+        {{ $scaffold.Content }}
+      </div>
+    {{ else }}
+      <div class="missing-block">⚠️ Missing scaffold <code>{{ $ref }}</code></div>
+    {{ end }}
+
+  {{ else if eq $type "reflection" }}
+    {{ $reflection := site.GetPage (printf "scaffolds/%s" $ref) }}
+    {{ if $reflection }}
+      <div class="composite-block reflection-block post-content">
+        {{ $reflection.Content }}
+      </div>
+    {{ else }}
+      <div class="missing-block">⚠️ Missing reflection <code>{{ $ref }}</code></div>
+    {{ end }}
+
+  {{ end }}
+{{ end }}
