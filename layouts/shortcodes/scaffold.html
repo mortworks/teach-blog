@@ -1,6 +1,0 @@
-{{ $file := .Get 0 }}
-{{ with .Site.GetPage $file }}
-  {{ .Content }}
-{{ else }}
-  <p><em>Scaffold not found: {{ $file }}</em></p>
-{{ end }}
