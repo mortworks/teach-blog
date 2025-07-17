@@ -1,5 +1,5 @@
 ---
-layout: lesson
+render: true
 structure:
   - type: text
     ref: intro-commentary

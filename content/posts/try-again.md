@@ -5,7 +5,7 @@ lastmod: 2025-07-08T17:17:15
 published: 2025-07-08T17:17:15
 draft: true
 slug: try-again
-layout: lesson
+render: true
 structure:
   - type: text
     ref: intro-commentary

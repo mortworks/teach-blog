@@ -5,7 +5,7 @@ lastmod: 2025-07-08T17:22:03
 published: 2025-07-08T17:22:03
 draft: true
 slug: waffle-test
-layout: lesson
+render: true
 structure:
   - type: text
     ref: intro-commentary

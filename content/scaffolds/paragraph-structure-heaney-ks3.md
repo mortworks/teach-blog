@@ -4,6 +4,10 @@ description: "A core structure for writing analytical paragraphs using the WHAT 
 version: "1.0"
 draft: false
 
+build:
+  list: never
+  render: never
+
 level: "intro"
 age_range: "KS3"
 

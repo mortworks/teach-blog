@@ -5,7 +5,7 @@ lastmod: "2025-07-08T17:34:39Z"
 published: 2025-07-08T18:33:47
 draft: true
 slug: july-8-testing-scaffold
-layout: lesson
+render: true
 structure:
   - type: text
     ref: intro-commentary

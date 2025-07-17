@@ -5,7 +5,7 @@ lastmod: 2025-07-08T17:13:13
 published: 2025-07-08T17:13:13
 draft: true
 slug: july-8-test-post
-layout: lesson
+render: true
 structure:
   - type: text
     ref: intro-commentary

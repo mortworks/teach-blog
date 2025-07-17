@@ -9,3 +9,12 @@ params:
   showReadingTime: true
   showToc: true
   showFullContent: false
+
+  # 👉 enables PaperMod’s home-info box
+  homeInfoParams:
+    Title: "✍️  PWM’s teach-blog"
+    Content: |
+      A hand-tooled resource for **curious learners** and **straight-talking teachers**.  
+      Essays, scaffolds, experiments in AI and code – all tested in a British classroom.
+
+      *Think hard.  Write well.*

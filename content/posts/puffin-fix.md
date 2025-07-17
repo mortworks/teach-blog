@@ -5,7 +5,7 @@ lastmod: 2025-07-08T17:31:33
 published: 2025-07-08T17:31:33
 draft: true
 slug: puffin-fix
-layout: lesson
+render: true
 structure:
   - type: text
     ref: intro-commentary

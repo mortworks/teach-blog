@@ -3,7 +3,7 @@ title: Turkish Delight
 date: 2025-07-02T21:50:07
 draft: true
 slug: turkish-delight
-layout: lesson
+render: true
 structure:
   - type: text
     ref: intro-commentary

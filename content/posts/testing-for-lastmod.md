@@ -4,7 +4,7 @@ date: 2025-07-03T22:55:44
 lastmod: 2025-07-03T21:58:10
 draft: false
 slug: testing-for-lastmod
-layout: lesson
+render: true
 structure:
   - type: text
     ref: intro-commentary
