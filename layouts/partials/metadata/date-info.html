@@ -1,0 +1,14 @@
+{{ $published := .Date }}
+{{ with .Params.published }}
+  {{ $published = time . }}
+{{ end }}
+{{ $lastmod := .Lastmod }}
+
+{{ $dateStr := $published.Format (default "2 January 2006" site.Params.DateFormat) }}
+
+{{ if gt (sub $lastmod.Unix $published.Unix) (mul 30 86400) }}
+  {{ $updateStr := $lastmod.Format (default "2 January 2006" site.Params.DateFormat) }}
+  {{ printf "%s · updated %s" $dateStr $updateStr }}
+{{ else }}
+  {{ $dateStr }}
+{{ end }}
