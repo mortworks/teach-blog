@@ -10,7 +10,6 @@ lastmod: "2025-07-19T12:49:42Z"
 published: "2025-07-19T12:49:42Z"
 draft: false
 slug: jul-19-rendering-test-2
-layout: composite
 structure:
   - ref: test-intro
   - ref: test-body
@@ -55,4 +54,6 @@ anchors:
 #     - id: summary
 #       title: Summary
 ---
-<!-- test-intro --> <!-- test-body --> <!-- test-summary -->
+<!-- test-intro --> 
+<!-- test-body --> 
+<!-- test-summary -->

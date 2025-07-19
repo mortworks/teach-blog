@@ -7,7 +7,7 @@
 title: Jul 19 Test rendering
 date: 2025-07-19T13:23:16
 lastmod: "2025-07-19T12:23:25Z"
-published: "2025-07-19T12:23:25Z"
+published: "2025-04-19T12:23:25Z"
 draft: false
 slug: jul-19-test-rendering
 layout: composite

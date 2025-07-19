@@ -10,7 +10,6 @@ lastmod: "2025-07-19T12:56:12Z"
 published: "2025-07-19T12:56:12Z"
 draft: false
 slug: jul-19-rendering-test-3
-layout: composite
 structure:
   - ref: test-intro
   - ref: test-body
