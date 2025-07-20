@@ -6,6 +6,7 @@ theme: "PaperMod"
 params:
   DateFormat: "2 January 2006"
   showPostNavLinks: true
+  showLastUpdated: true
   showReadingTime: true
   showToc: true
   showFullContent: false
