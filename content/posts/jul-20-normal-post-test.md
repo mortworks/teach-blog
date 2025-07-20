@@ -10,9 +10,6 @@ lastmod: "2025-07-20T13:04:37Z"
 published: "2025-07-20T13:04:37Z"
 draft: false
 slug: jul-20-normal-post-test
-layout: default
-structure: []
-anchors: []
 # lesson:
 #   layout: lesson
 #   structure:
@@ -42,3 +39,6 @@ anchors: []
 ---
 published: "2025-07-20T13:04:37Z"
 lastmod: "2025-07-20T13:04:37Z"
+
+
+Here is my test text
