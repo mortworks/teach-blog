@@ -1,0 +1,4 @@
+name = "hugo-composer"
+description = "Composable content blocks for Hugo (structure or template)"
+version = "0.1.0"
+min_version = "0.120.0"

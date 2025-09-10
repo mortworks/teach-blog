@@ -1,0 +1,9 @@
+{{- /* composer/render-structure.html */ -}}
+{{- $blocks := .Structure | default slice -}}
+{{- if eq (len $blocks) 0 -}}
+  <div class="missing-structure">⚠️ No blocks in structure.</div>
+{{- else -}}
+  {{- range $blk := $blocks -}}
+    {{- partial "composer/render-block.html" $blk -}}
+  {{- end -}}
+{{- end -}}

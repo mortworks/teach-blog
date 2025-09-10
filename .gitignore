@@ -1,57 +1,14 @@
-# ---------------------------------------
-# Compiled source and binary artefacts
-# ---------------------------------------
-*.com
-*.class
-*.dll
-*.exe
-*.o
-*.so
+# macOS
+.DS_Store
 
-# ---------------------------------------
-# Archive and package formats
-# ---------------------------------------
-*.7z
-*.dmg
-*.gz
-*.iso
-*.jar
-*.rar
-*.tar
-*.zip
-
-# ---------------------------------------
-# Logs, databases, and temp files
-# ---------------------------------------
-*.log
-*.sql
-*.sqlite
+# Hugo
+public/
+resources/
+.hugo_cache/
 *.lock
 
-# ---------------------------------------
-# OS-generated files
-# ---------------------------------------
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
+# Node & tooling
+node_modules/
 
-# ---------------------------------------
-# Hugo build artefacts (flattened structure)
-# ---------------------------------------
-/public/
-/resources/
-/.hugo_build.lock
-
-# ---------------------------------------
-# Environment files and secrets
-# ---------------------------------------
-.env
-
-# ---------------------------------------
-# Optional: script-generated junk
-# ---------------------------------------
-scripts/*/tmp/
+# Local dev config
+hugo.dev.yaml

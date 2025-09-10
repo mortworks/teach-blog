@@ -1,0 +1,8 @@
+<section class="prose">
+  <h2>Context</h2>
+  <ul>
+    {{- range .block.items -}}
+      <li>{{ . | markdownify }}</li>
+    {{- end -}}
+  </ul>
+</section>

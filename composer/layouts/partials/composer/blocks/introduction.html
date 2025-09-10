@@ -1,0 +1,8 @@
+<section>
+  <h2 id="introduction">Introduction</h2>
+  {{ with .block.reading }}<p><strong>Reading:</strong> {{ . }}</p>{{ end }}
+  {{ with .block.discussion }}
+    <h3>Discussion</h3>
+    <div>{{ . | markdownify }}</div>
+  {{ end }}
+</section>

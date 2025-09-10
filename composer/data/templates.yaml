@@ -1,0 +1,91 @@
+# templates.yaml — central source for post scaffolds
+# This file supports Hugo blogs using the hugo-composer submodule.
+# Each key represents a type of post template.
+# Add new entries over time. Maintain clarity with comments and examples.
+
+blank:
+  # A standard Markdown post with no composite structure.
+  layout: default
+  structure: []
+  anchors: []
+
+custom-composite:
+  # A hand-built composite post with example content blocks
+  layout: lesson
+  structure:
+    - ref: intro
+    - ref: main-points
+    - ref: conclusion
+  anchors:
+    - id: intro
+      title: Introduction
+    - id: main-points
+      title: Main Points
+    - id: conclusion
+      title: Conclusion
+
+demo-min:
+  structure:
+    - block: prose
+      content: |
+        Hello from Composer (template path). This is a smoke test.
+
+
+
+test-template:
+  structure:
+    - test-block
+  anchors:
+    test-block:
+      type: paragraph
+      text: 💾 This block was loaded from the template fallback system.
+
+
+test-post:
+  layout: composite
+  structure:
+    - ref: test-intro
+    - ref: test-body
+    - ref: test-summary
+  anchors:
+    test-intro: |
+      ## Intro
+
+      This is a test intro paragraph.
+    test-body: |
+      ## Main body
+
+      This is where your main content goes.
+    test-summary: |
+      ## Summary
+
+      Wrap-up thoughts go here.
+
+
+# lesson:
+#   layout: lesson
+#   structure:
+#     - ref: warmup
+#     - ref: model
+#     - ref: analysis
+#   anchors:
+#     - id: warmup
+#       title: Warm-up
+#     - id: model
+#       title: Model Paragraph
+#     - id: analysis
+#       title: Analysis
+
+# revision:
+#   layout: revision
+#   structure:
+#     - ref: recap
+#     - ref: quiz
+#     - ref: summary
+#   anchors:
+#     - id: recap
+#       title: Recap
+#     - id: quiz
+#       title: Quick Quiz
+#     - id: summary
+#       title: Summary

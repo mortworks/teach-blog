@@ -1,0 +1,41 @@
+{{- /* composer/render-block.html */ -}}
+{{- $ctx := . -}}
+
+{{- if isset $ctx "ref" -}}
+  {{- $ref := $ctx.ref -}}
+  {{- $anchors := $ctx.anchors | default dict -}}
+  {{- $raw := index $anchors $ref -}}
+
+  {{- if not $raw -}}
+    <div class="missing-anchor">⚠️ Anchor <code>{{ $ref }}</code> not found.</div>
+  {{- else if eq (printf "%T" $raw) "string" -}}
+    <section id="{{ $ref }}" class="content-block"><article class="prose">{{ $raw | markdownify }}</article></section>
+  {{- else if eq (printf "%T" $raw) "maps.Params" -}}
+    {{- $block := dict -}}{{- range $k, $v := $raw -}}{{- $block = merge $block (dict $k $v) -}}{{- end -}}
+    {{- $type := $block.type | default "unknown" -}}
+    <section id="{{ $ref }}" class="content-block"><article class="prose">
+      {{- if eq $type "paragraph" -}}
+        <p>{{ $block.text | markdownify }}</p>
+      {{- else -}}
+        <div class="unsupported-block-type">⚠️ Unhandled block type: <code>{{ $type }}</code></div>
+        <pre>{{ $block | jsonify (dict "indent" "  ") }}</pre>
+      {{- end -}}
+    </article></section>
+  {{- else -}}
+    <div class="invalid-block-type">⚠️ Unhandled anchor value type: {{ printf "%T" $raw }}</div>
+  {{- end -}}
+
+{{- else if isset $ctx "block" -}}
+  {{- $b := $ctx -}}
+  {{- $kind := $b.block | default "" -}}
+  {{- if eq $kind "prose" -}}
+    <section class="content-block"><article class="prose">{{ $b.content | markdownify }}</article></section>
+  {{- else -}}
+    <div class="composer-unknown-block">Unknown block: <code>{{ $kind }}</code></div>
+    <pre>{{ $b | jsonify (dict "indent" "  ") }}</pre>
+  {{- end -}}
+
+{{- else -}}
+  <div class="composer-block-error">⚠️ render-block called with unsupported payload.</div>
+  <pre>{{ $ctx | jsonify (dict "indent" "  ") }}</pre>
+{{- end -}}

@@ -1,21 +1,46 @@
 baseURL: "https://mortworks.github.io/teach-blog/"
 languageCode: "en-us"
 title: "PWM Teach-Blog"
-theme: "PaperMod"
+
+theme:
+  - hugo-composer
+  - PaperMod
+
+module:
+  imports:
+    - path: github.com/mortworks/teach-data
+      mounts:
+        - source: data
+          target: data
+  mounts:
+    - source: composer/layouts
+      target: layouts
+
+markup:
+  goldmark:
+    renderer:
+      unsafe: true
+  tableOfContents:
+    startLevel: 2
+    endLevel: 4
+    ordered: false
 
 params:
+  mainSections: ["posts", "lessons", "lesson"]
+  composer:
+    debug: false
   DateFormat: "2 January 2006"
   showPostNavLinks: true
   showLastUpdated: true
   showReadingTime: true
-  showToc: true
+  ShowToc: true
+  TocOpen: true
   showFullContent: false
 
-  # 👉 enables PaperMod’s home-info box
-  homeInfoParams:
-    Title: "✍️  PWM’s teach-blog"
-    Content: |
-      A hand-tooled resource for **curious learners** and **straight-talking teachers**.  
-      Essays, scaffolds, experiments in AI and code – all tested in a British classroom.
+homeInfoParams:
+  Title: "✍️  PWM’s teach-blog"
+  Content: |
+    A hand-tooled resource for **curious learners** and **straight-talking teachers**.
+    Essays, scaffolds, experiments in AI and code – all tested in a British classroom.
 
-      *Think hard.  Write well.*
+    *Think hard.  Write well.*

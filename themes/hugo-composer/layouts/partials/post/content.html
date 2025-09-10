@@ -1,0 +1,12 @@
+<!-- COMPOSER body-switch partial LOADED -->
+{{/* Composer body switch; leave header/meta to the host theme */}}
+{{- $use := or (.Params.structure) (.Params.template) -}}
+{{- if $use -}}
+  {{ partial "composer/route-post.html" . }}
+{{- else -}}
+  {{- if not (.Param "disableAnchoredHeadings") -}}
+    {{ partial "anchored_headings.html" .Content }}
+  {{- else -}}
+    {{ .Content }}
+  {{- end -}}
+{{- end -}}

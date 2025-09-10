@@ -1,0 +1,30 @@
+{{- $b := .block -}}
+{{- $name := "" -}}
+{{- with (index $b "block") }}{{ $name = . }}{{ end -}}
+{{- if eq $name "" }}{{ with (index $b "name") }}{{ $name = . }}{{ end }}{{ end -}}
+{{- if eq $name "" }}{{ with (index $b "type") }}{{ $name = . }}{{ end }}{{ end -}}
+{{- if eq $name "" }}{{ $name = "text" }}{{ end -}}
+
+{{- $ctx := dict "block" $b "Page" (.Page | default .page) "page" (.page | default .Page) "Site" (site) -}}
+
+{{- $candidates := slice
+    (printf "composer/blocks/%s.html" $name)
+    (printf "blocks/%s.html" $name)
+    (printf "composer/block-%s.html" $name)
+    (printf "composer/%s.html" $name)
+-}}
+
+{{- $found := "" -}}
+{{- range $candidates -}}
+  {{- if templates.Exists (printf "partials/%s" .) -}}
+    {{- $found = . -}}
+    {{- break -}}
+  {{- end -}}
+{{- end -}}
+
+{{- if $found -}}
+  {{- partial $found $ctx -}}
+{{- else -}}
+  <div class="composer-unknown-block">Unknown block: <code>{{ $name }}</code></div>
+  <pre>{{ $b | jsonify (dict "indent" "  ") }}</pre>
+{{- end -}}

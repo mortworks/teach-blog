@@ -1,0 +1,28 @@
+{{ $b := .block }}
+<section class="prose">
+  <h2>Questions</h2>
+
+  {{ with $b.general }}
+    <h3>General</h3>
+    <ol>
+      {{- range . -}} <li>{{ . | markdownify }}</li> {{- end -}}
+    </ol>
+  {{ end }}
+
+  {{ with $b.targeted }}
+    <h3>Targeted</h3>
+    {{- range . -}}
+      <h4>{{ with .ref }}{{ . }}{{ end }}</h4>
+      <ol>
+        {{- range .items -}} <li>{{ . | markdownify }}</li> {{- end -}}
+      </ol>
+    {{- end -}}
+  {{ end }}
+
+  {{ with $b.extension }}
+    <h3>Extension</h3>
+    <ul>
+      {{- range . -}} <li>{{ . | markdownify }}</li> {{- end -}}
+    </ul>
+  {{ end }}
+</section>

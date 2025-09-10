@@ -1,0 +1,19 @@
+{{/* blocks/hero.html — tolerant & safe, no GetRemote */}}
+{{ $u := "" }}{{ $alt := "" }}
+{{ with .block.image }}
+  {{ if eq (printf "%T" .) "string" }}
+    {{ $u = . }}
+  {{ else }}
+    {{ with .url }}{{ $u = . }}{{ end }}
+    {{ with .alt }}{{ $alt = . }}{{ end }}
+  {{ end }}
+{{ end }}
+
+{{ $u = strings.Trim $u " \t\r\n" }}
+
+{{ if $u }}
+  <figure class="post-cover">
+    <img src="{{ $u | safeURL }}" alt="{{ $alt | default "" | plainify }}" loading="lazy" decoding="async">
+    {{ with $alt }}<figcaption>{{ . }}</figcaption>{{ end }}
+  </figure>
+{{ end }}

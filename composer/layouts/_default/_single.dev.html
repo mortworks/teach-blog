@@ -1,0 +1,18 @@
+{{ define "main" }}
+<article class="single max-w-3xl mx-auto prose">
+  <header class="mb-8">
+    <h1 class="mb-2">{{ .Title }}</h1>
+    {{ with .Date }}<p class="text-sm opacity-70">{{ .Format "2 January 2006" }}</p>{{ end }}
+  </header>
+
+  {{ with .TableOfContents }}
+    <nav class="toc mb-8">
+      {{ . | safeHTML }}
+    </nav>
+  {{ end }}
+
+  <div class="post-content">
+    {{ .Content }}
+  </div>
+</article>
+{{ end }}

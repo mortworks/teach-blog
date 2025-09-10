@@ -1,0 +1,95 @@
+{{/* composer/render-template.html — robust + legacy friendly */}}
+
+{{ $page := .Page }}
+{{ if not $page }}{{ $page = .page }}{{ end }}
+{{ if not $page }}{{ $page = . }}{{ end }}
+
+{{/* ---- Structure -> slice ---- */}}
+{{ $structParam := .Structure }}
+{{ if not $structParam }}{{ $structParam = .structure }}{{ end }}
+{{ if not $structParam }}{{ with $page }}{{ with .Params.structure }}{{ $structParam = . }}{{ end }}{{ end }}{{ end }}
+
+{{ $structure := slice }}
+{{ if (and $structParam (reflect.IsSlice $structParam)) }}
+  {{ $structure = $structParam }}
+{{ else if (and $structParam (reflect.IsMap $structParam)) }}
+  {{ $structure = slice $structParam }}
+{{ else if (and $structParam (reflect.IsString $structParam)) }}
+  {{ $structure = slice $structParam }}
+{{ end }}
+
+{{/* ---- Anchors -> map in Scratch ---- */}}
+{{ $anchorsParam := .Anchors }}
+{{ if not $anchorsParam }}{{ with $page }}{{ with .Params.anchors }}{{ $anchorsParam = . }}{{ end }}{{ end }}{{ end }}
+
+{{ $S := newScratch }}
+{{ $S.Set "A" (dict) }}
+
+{{ if $anchorsParam }}
+  {{ if (reflect.IsMap $anchorsParam) }}
+    {{ $S.Set "A" $anchorsParam }}
+  {{ else if (reflect.IsSlice $anchorsParam) }}
+    {{ range $anchorsParam }}
+      {{ if (reflect.IsMap .) }}
+        {{ $k := "" }}
+        {{ with (index . "id") }}{{ $k = . }}{{ end }}
+        {{ if not $k }}{{ with (index . "ref") }}{{ $k = . }}{{ end }}{{ end }}
+        {{ if not $k }}{{ with (index . "name") }}{{ $k = . }}{{ end }}{{ end }}
+        {{ if not $k }}{{ with (index . "key") }}{{ $k = . }}{{ end }}{{ end }}
+        {{ if $k }}{{ $S.SetInMap "A" $k . }}{{ end }}
+      {{ else if (reflect.IsString .) }}
+        {{ $S.SetInMap "A" . . }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+
+{{ $A := $S.Get "A" }}
+
+{{/* ---- Render each spec ---- */}}
+{{ range $spec := $structure }}
+  {{/* Derive name + key */}}
+  {{ $name := "text" }}
+  {{ $key := "" }}
+  {{ if (reflect.IsMap $spec) }}
+    {{ with (index $spec "block") }}{{ $name = . }}{{ end }}
+    {{ if eq $name "text" }}{{ with (index $spec "name") }}{{ $name = . }}{{ end }}{{ end }}
+    {{ if eq $name "text" }}{{ with (index $spec "type") }}{{ $name = . }}{{ end }}{{ end }}
+    {{ with (index $spec "ref") }}{{ $key = . }}{{ end }}
+    {{ if not $key }}{{ with (index $spec "use") }}{{ $key = . }}{{ end }}{{ end }}
+    {{ if not $key }}{{ with (index $spec "id") }}{{ $key = . }}{{ end }}{{ end }}
+  {{ else if (reflect.IsString $spec) }}
+    {{ $key = $spec }}
+  {{ end }}
+
+  {{/* Build block map in Scratch (no inline assignment) */}}
+  {{ $B := newScratch }}
+  {{ $B.Set "m" (dict) }}
+  {{ $B.SetInMap "m" "block" $name }}
+
+  {{ $base := nil }}
+  {{ if and $key (reflect.IsMap $A) }}
+    {{ $base = index $A $key }}
+  {{ end }}
+
+  {{ with $base }}
+    {{ if (reflect.IsMap .) }}
+      {{ range $k, $v := . }}{{ $B.SetInMap "m" $k $v }}{{ end }}
+    {{ else if (reflect.IsSlice .) }}
+      {{ $B.SetInMap "m" "items" . }}
+    {{ else if (reflect.IsString .) }}
+      {{ $B.SetInMap "m" "text" . }}
+    {{ end }}
+  {{ end }}
+
+  {{ if (reflect.IsMap $spec) }}
+    {{ range $k, $v := $spec }}
+      {{ if and (ne $k "ref") (ne $k "use") (ne $k "id") (ne $k "name") (ne $k "type") (ne $k "block") }}
+        {{ $B.SetInMap "m" $k $v }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+
+  {{ $block := $B.Get "m" }}
+  {{ partial "composer/render-block.html" (dict "block" $block "Page" $page "page" $page "Site" (site)) }}
+{{ end }}

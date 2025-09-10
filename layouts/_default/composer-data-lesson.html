@@ -1,0 +1,114 @@
+{{ $id := .Params.lesson_id }}
+{{ $S := newScratch }}
+{{ $S.Set "structure" (slice) }}
+
+{{/* lessons.csv -> []map */}}
+{{ $lrows := resources.Get "lessons/lessons.csv" | transform.Unmarshal }}
+{{ $lessons := slice }}
+{{ $lh := index $lrows 0 }}
+{{ range $i, $r := $lrows }}
+  {{ if lt $i 1 }}{{ continue }}{{ end }}
+  {{ $m := dict }}
+  {{ range $j, $hraw := $lh }}
+    {{ $h := strings.Trim $hraw " \t\r\n" }}
+    {{ $val := strings.Trim (index $r $j) " \t\r\n" }}
+    {{ $m = merge $m (dict $h $val) }}
+  {{ end }}
+  {{ $lessons = $lessons | append $m }}
+{{ end }}
+
+{{ $lesson := dict }}
+{{ range $lessons }}
+  {{ if eq (index . "id") $id }}{{ $lesson = . }}{{ end }}
+{{ end }}
+{{ if eq (len $lesson) 0 }}<p style="color:red">Lesson not found: {{$id}}</p>{{ return }}{{ end }}
+
+{{/* Context (from .Site.Data) */}}
+{{ $ctx := slice }}
+{{ with (index $lesson "context_refs") }}
+  {{ range (split . ";") }}
+    {{ $k := strings.Trim . " \t\r\n" }}
+    {{ with (index $.Site.Data.shared.context $k) }}{{ $ctx = $ctx | append . }}{{ end }}
+  {{ end }}
+{{ end }}
+{{ if gt (len $ctx) 0 }}
+  {{ $S.Set "structure" ( $S.Get "structure" | append (dict "block" "context" "items" $ctx) ) }}
+{{ end }}
+
+{{/* Vocabulary (shared + extras; extras work even without shared file) */}}
+{{ $v := slice }}
+{{ with (index $lesson "vocab_use") }}
+  {{ range (split . ";") }}
+    {{ $k := strings.Trim . " \t\r\n" }}
+    {{ with (index $.Site.Data.shared.vocab $k) }}
+      {{ range . }}{{ $v = $v | append . }}{{ end }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+{{ with (index $lesson "vocab_extra") }}
+  {{ range (split . ";") }}
+    {{ $t := strings.Trim . " \t\r\n" }}{{ if $t }}{{ $v = $v | append $t }}{{ end }}
+  {{ end }}
+{{ end }}
+{{ if gt (len $v) 0 }}
+  {{ $S.Set "structure" ( $S.Get "structure" | append (dict "block" "key_vocabulary" "items" $v) ) }}
+{{ end }}
+
+{{/* questions.csv -> []map (filtered) */}}
+{{ $qrows := resources.Get "lessons/questions.csv" | transform.Unmarshal }}
+{{ $questions := slice }}
+{{ $qh := index $qrows 0 }}
+{{ range $i, $r := $qrows }}
+  {{ if lt $i 1 }}{{ continue }}{{ end }}
+  {{ $m := dict }}
+  {{ range $j, $hraw := $qh }}
+    {{ $h := strings.Trim $hraw " \t\r\n" }}
+    {{ $val := strings.Trim (index $r $j) " \t\r\n" }}
+    {{ $m = merge $m (dict $h $val) }}
+  {{ end }}
+  {{ if eq (index $m "lesson_id") $id }}{{ $questions = $questions | append $m }}{{ end }}
+{{ end }}
+
+{{ $general := where $questions "kind" "general" }}
+{{ $targeted := where $questions "kind" "targeted" }}
+{{ $extension := where $questions "kind" "extension" }}
+
+{{ $qgen := slice }}
+{{ range sort $general "ord" "asc" }}{{ $qgen = $qgen | append (index . "text") }}{{ end }}
+
+{{ $byRef := dict }}
+{{ range sort $targeted "ord" "asc" }}
+  {{ $ref := (index . "ref") | default "" }}
+  {{ $list := (index $byRef $ref) | default (slice) }}
+  {{ $byRef = merge $byRef (dict $ref ( $list | append (index . "text") )) }}
+{{ end }}
+{{ $qtarg := slice }}
+{{ range $ref, $items := $byRef }}
+  {{ $qtarg = $qtarg | append (dict "ref" $ref "items" $items) }}
+{{ end }}
+
+{{ $qext := slice }}
+{{ range sort $extension "ord" "asc" }}{{ $qext = $qext | append (index . "text") }}{{ end }}
+
+{{ if or (gt (len $qgen) 0) (gt (len $qtarg) 0) (gt (len $qext) 0) }}
+  {{ $S.Set "structure" ( $S.Get "structure" | append (dict "block" "questions" "general" $qgen "targeted" $qtarg "extension" $qext) ) }}
+{{ end }}
+
+{{/* Optional hero + intro (empty in your test, harmless) */}}
+{{ with (index $lesson "image_url") }}
+  {{ $img := dict "url" . "alt" (index $lesson "image_alt") }}
+  {{ $S.Set "structure" ( $S.Get "structure" | append (dict "block" "hero" "image" $img) ) }}
+{{ end }}
+{{ if or (index $lesson "intro_reading") (index $lesson "intro_discussion") }}
+  {{ $S.Set "structure" ( $S.Get "structure" | append (dict "block" "introduction" "reading" (index $lesson "intro_reading") "discussion" (index $lesson "intro_discussion")) ) }}
+{{ end }}
+
+{{/* quick debug */}}
+<p style="color:orange">structure={{ len ($S.Get "structure") }} qrows={{ len $qrows }} qsel={{ len $questions }}</p>
+
+{{ partial "composer/render-structure.html" (dict
+  "structure" ($S.Get "structure")
+  "Structure" ($S.Get "structure")
+  "page" .
+  "Page" .
+) }}

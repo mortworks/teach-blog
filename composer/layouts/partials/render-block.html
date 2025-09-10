@@ -1,0 +1,38 @@
+{{/*
+  render-block.html
+  Renders an individual content block from anchors map.
+  Expects a dict with:
+    - ref: string (key into anchors map)
+    - anchors: map of blocks
+*/}}
+
+{{ $ref := .ref }}
+{{ $anchors := .anchors }}
+{{ $block := index $anchors $ref }}
+
+{{/* Defensive: ensure $block is a map */}}
+{{ if not (isset $anchors $ref) }}
+  <div class="missing-block" style="color:red">
+    ⚠️ Block <code>{{ $ref }}</code> not found in anchors.
+  </div>
+{{ else if not (eq (printf "%T" $block) "maps.Params") }}
+  <div class="bad-block-type" style="color:red">
+    ⚠️ Block for <code>{{ $ref }}</code> has unexpected type: <code>{{ printf "%T" $block }}</code>
+  </div>
+{{ else }}
+  {{ $type := $block.type | default "missing" }}
+
+  {{/* Optional: validate known block types */}}
+  {{ if eq $type "paragraph" }}
+    <p>{{ $block.text | markdownify }}</p>
+
+  {{ else if eq $type "heading" }}
+    <h2>{{ $block.text }}</h2>
+
+  {{ else }}
+    <div class="unhandled-type" style="color:orange">
+      ⚠️ Block for <code>{{ $ref }}</code> has unhandled type: <code>{{ $type }}</code>
+      <pre>{{ $block | jsonify (dict "indent" "  ") }}</pre>
+    </div>
+  {{ end }}
+{{ end }}

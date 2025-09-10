@@ -1,0 +1,24 @@
+{{- /* composer/render-template.html */ -}}
+{{- $structure := .Structure | default slice -}}
+{{- $anchors := .Anchors   | default dict  -}}
+
+{{- if eq (len $structure) 0 -}}
+  <div class="missing-template-structure">⚠️ No structure defined for this template.</div>
+{{- else if ne (printf "%T" $anchors) "map[string]interface {}" -}}
+  <div class="missing-template-anchors">⚠️ Anchors must be a map (got {{ printf "%T" $anchors }}).</div>
+{{- else -}}
+  {{- range $item := $structure -}}
+    {{- $t := printf "%T" $item -}}
+    {{- $ref := "" -}}
+    {{- if eq $t "string" -}}
+      {{- $ref = $item -}}
+    {{- else if eq $t "map[string]interface {}" -}}
+      {{- if isset $item "ref" -}}{{- $ref = $item.ref -}}{{- end -}}
+    {{- end -}}
+    {{- if $ref -}}
+      {{- partial "composer/render-block.html" (dict "ref" $ref "anchors" $anchors) -}}
+    {{- else -}}
+      <div class="block-error">⚠️ Couldn’t resolve a ref from structure item (type {{ $t }}).</div>
+    {{- end -}}
+  {{- end -}}
+{{- end -}}

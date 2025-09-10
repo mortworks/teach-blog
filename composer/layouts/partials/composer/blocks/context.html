@@ -1,0 +1,6 @@
+<section>
+  <h2 id="context">Context</h2>
+  <ul>
+    {{ range .block.items }}<li>{{ . | markdownify }}</li>{{ end }}
+  </ul>
+</section>

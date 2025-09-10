@@ -1,0 +1,36 @@
+{{/*
+  get-block.html
+  Returns the rendered content block identified by a key.
+  Expects:
+    - key: string or {ref: name}
+    - anchors: map of name → block
+*/}}
+
+{{ $rawKey := .key }}
+{{ $anchors := .anchors }}
+{{ $key := "" }}
+
+{{ if eq (printf "%T" $rawKey) "string" }}
+  {{ $key = $rawKey }}
+{{ else if and (eq (printf "%T" $rawKey) "map[string]interface {}") (index $rawKey "ref") }}
+  {{ $key = index $rawKey "ref" }}
+{{ else }}
+  <div class="block-error">
+    ⚠️ Invalid key for block: <code>{{ $rawKey }}</code>
+  </div>
+{{ end }}
+
+{{ $block := index $anchors $key }}
+{{ if not $block }}
+  <div class="block-error">
+    ⚠️ Block <code>{{ $key }}</code> not found in anchors.
+  </div>
+{{ else if eq (printf "%T" $block) "string" }}
+  {{ $block | markdownify }}
+{{ else if and (eq (printf "%T" $block) "map[string]interface {}") (eq (index $block "type") "paragraph") }}
+  {{ index $block "text" | markdownify }}
+{{ else }}
+  <div class="block-error">
+    ⚠️ Block <code>{{ $key }}</code> has unsupported structure or missing type.
+  </div>
+{{ end }}

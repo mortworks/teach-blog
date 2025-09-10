@@ -1,0 +1,11 @@
+{{/* composer/route-post.html — safe fallback to render-structure */}}
+
+{{ $page := . }}
+{{ $structure := $page.Params.structure | default (slice) }}
+
+{{ partial "composer/render-structure.html" (dict
+  "structure" $structure
+  "Page"      $page
+  "page"      $page
+  "Site"      (site)
+) }}

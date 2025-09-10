@@ -1,0 +1,232 @@
+{{ define "main" }}
+{{/* -------- Resolve lesson via cached index -------- */}}
+{{ $id := .Params.lesson_id }}
+{{ $idx := partialCached "composer/data-index.html" "v1" }}  {{/* bump "v1" if schema changes */}}
+{{ $lesson := cond (and $id (isset $idx.lessons $id)) (index $idx.lessons $id) (dict) }}
+
+{{/* Subject is the first segment of the id: subject:unit:slug */}}
+{{ $subject := "" }}
+{{ if $id }}{{ $subject = index (split $id ":") 0 }}{{ end }}
+
+{{/* Shared lookups for this subject (context/vocab) */}}
+{{ $shared := dict }}
+{{ if and $subject (isset $idx.shared $subject) }}
+  {{ $shared = index $idx.shared $subject }}
+{{ end }}
+
+{{/* -------- PRECOMPUTE (robust) -------- */}}
+{{/* Intro: support both nested and legacy flat keys */}}
+{{ $introReading := "" }}{{ $introDiscussion := "" }}
+{{ with $lesson.intro }}
+  {{ $introReading = strings.Trim ((.reading | default "")) " \t\r\n" }}
+  {{ $introDiscussion = strings.Trim ((.discussion | default "")) " \t\r\n" }}
+{{ end }}
+{{ if eq $introReading ""  }}{{ $introReading  = strings.Trim (( $lesson.intro_reading  | default "")) " \t\r\n" }}{{ end }}
+{{ if eq $introDiscussion "" }}{{ $introDiscussion = strings.Trim (( $lesson.intro_discussion | default "")) " \t\r\n" }}{{ end }}
+{{ $hasIntro := or (gt (len $introReading) 0) (gt (len $introDiscussion) 0) }}
+
+{{/* Build Context items: accept inline .context or refs into shared.context */}}
+{{ $ctx := slice }}
+{{ with $lesson.context_refs }}
+  {{ range . }}
+    {{ with (and $shared (index $shared "context")) }}
+      {{ with (index . $) }}{{ range . }}{{ $ctx = $ctx | append . }}{{ end }}{{ end }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+{{ with $lesson.context }}
+  {{ range . }}{{ if . }}{{ $ctx = $ctx | append . }}{{ end }}{{ end }}
+{{ end }}
+{{ $hasContext := gt (len $ctx) 0 }}
+
+{{/* Questions: allow maps or strings for targeted */}}
+{{ $gen := slice }}{{ $tgt := slice }}{{ $ext := slice }}
+{{ with $lesson.questions }}
+  {{ $gen = .general | default (slice) }}
+  {{ $tgt = .targeted | default (slice) }}
+  {{ $ext = .extension | default (slice) }}
+{{ end }}
+{{ $hasGen := gt (len $gen) 0 }}
+{{ $hasTgt := gt (len $tgt) 0 }}
+{{ $hasExt := gt (len $ext) 0 }}
+
+{{/* Vocab: merge use (refs) + extra (inline) */}}
+{{ $v := slice }}
+{{ with $lesson.vocab_use }}
+  {{ range . }}
+    {{ with (and $shared (index $shared "vocab")) }}
+      {{ with (index . $) }}{{ range . }}{{ $v = $v | append . }}{{ end }}{{ end }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+{{ with $lesson.vocab_extra }}
+  {{ range . }}{{ if . }}{{ $v = $v | append . }}{{ end }}{{ end }}
+{{ end }}
+{{ $hasVocab := gt (len $v) 0 }}
+
+{{/* Further context */}}
+{{ $further := $lesson.further_context | default (slice) }}
+{{ $hasFurther := gt (len $further) 0 }}
+
+
+{{ if site.Params.composer.debug }}
+<p style="color:#888;font-size:.9rem">
+  intro={{$hasIntro}}
+  ctx={{len $ctx}}
+  gen={{len $gen}}
+  tgt={{len $tgt}}
+  ext={{len $ext}}
+  vocab={{len $v}}
+  further={{len $further}}
+</p>
+{{ end }}
+
+{{ if site.Params.composer.debug }}
+<p style="color:#888">
+  subject={{ $subject }}
+  hasLesson={{ gt (len $lesson) 0 }}
+  hasShared={{ gt (len $shared) 0 }}
+</p>
+{{ end }}
+
+
+
+<article class="post-single">
+  <header class="post-header">
+    {{ if templates.Exists "partials/breadcrumbs.html" }}{{ partial "breadcrumbs.html" . }}{{ end }}
+    <h1 class="post-title">{{ .Title }}</h1>
+    {{/* Front-matter dates drive meta; shows updated if it differs */}}
+    {{ $pub := .Date }}{{ $mod := .Lastmod }}
+    <div class="post-meta">
+      <span class="post-date">
+        <time datetime="{{ $pub.Format "2006-01-02" }}">{{ $pub.Format (site.Params.DateFormat | default "2 January 2006") }}</time>
+      </span>
+      {{ if and $mod (ne $mod $pub) }}
+        <span class="lastmod"> · updated
+          <time datetime="{{ $mod.Format "2006-01-02" }}">{{ $mod.Format (site.Params.DateFormat | default "2 January 2006") }}</time>
+        </span>
+      {{ end }}
+      {{ with .ReadingTime }}<span class="read-time"> · {{ . }} min</span>{{ end }}
+    </div>
+  </header>
+
+  {{/* -------- PaperMod-style, collapsible ToC (only non-empty sections) -------- */}}
+  {{ if gt (len $lesson) 0 }}
+    <div class="toc">
+      <details {{ if or (.Params.TocOpen) (site.Params.TocOpen) }}open{{ end }}>
+        <summary accesskey="c" title="(Alt + C)">
+          <span class="details">Table of Contents</span>
+        </summary>
+        <div class="inner">
+          <nav id="TableOfContents">
+            <ul>
+              {{ if $hasIntro }}<li><a href="#introduction">Introduction</a></li>{{ end }}
+              {{ if $hasContext }}<li><a href="#context">Context</a></li>{{ end }}
+              {{ if or $hasGen $hasTgt $hasExt }}
+                <li>
+                  <a href="#questions">Questions</a>
+                  <ul>
+                    {{ if $hasGen }}<li><a href="#questions-general">General</a></li>{{ end }}
+                    {{ if $hasTgt }}
+                      <li>
+                        <a href="#questions-targeted">Targeted</a>
+                        {{/* nested list only if we actually have identifiable refs */}}
+                        {{ $shown := false }}
+                        <ul>
+                          {{ range $tgt }}
+                            {{ if and (reflect.IsMap .) (isset . "ref") }}
+                              {{ $shown = true }}
+                              {{ with .ref }}<li><a href="#qref-{{ . | anchorize }}">{{ . }}</a></li>{{ end }}
+                            {{ end }}
+                          {{ end }}
+                        </ul>
+                      </li>
+                    {{ end }}
+                    {{ if $hasExt }}<li><a href="#questions-extension">Extension</a></li>{{ end }}
+                  </ul>
+                </li>
+              {{ end }}
+              {{ if $hasVocab }}<li><a href="#key-vocabulary">Key vocabulary</a></li>{{ end }}
+              {{ if $hasFurther }}<li><a href="#further-context">Further context</a></li>{{ end }}
+            </ul>
+          </nav>
+        </div>
+      </details>
+    </div>
+  {{ end }}
+
+  <div class="post-content">
+    {{ if not $id }}
+      <p style="color:red">Missing <code>lesson_id</code> in front matter.</p>
+    {{ else if eq (len $lesson) 0 }}
+      <p style="color:red">Lesson not found in data: <code>{{ $id }}</code></p>
+    {{ else if and $lesson.status (ne (lower $lesson.status) "ready") }}
+      <p><em>Draft lesson (status: {{ $lesson.status }}).</em></p>
+    {{ else }}
+      {{/* -------- Build Composer structure using the precomputed pieces -------- */}}
+      {{ $S := newScratch }}{{ $S.Set "structure" (slice) }}
+
+      {{/* Normalize image: accept string OR map {url,alt} */}}
+      {{ $imgURL := "" }}{{ $imgAlt := "" }}
+      {{ with $lesson.image }}
+        {{ if eq (printf "%T" .) "string" }}
+          {{ $imgURL = . }}
+        {{ else }}
+          {{ with .url }}{{ $imgURL = . }}{{ end }}
+          {{ with .alt }}{{ $imgAlt = . }}{{ end }}
+        {{ end }}
+      {{ end }}
+      {{ if $imgURL }}
+        {{ $S.Set "structure" ( $S.Get "structure" | append (dict
+          "block" "hero"
+          "image" (dict "url" $imgURL "alt" $imgAlt)
+        )) }}
+      {{ end }}
+
+      {{ if $hasIntro }}
+        {{ $S.Set "structure" ( $S.Get "structure" | append (dict
+          "block" "introduction" "reading" (cond (ne $introReading "") $introReading nil)
+                                      "discussion" (cond (ne $introDiscussion "") $introDiscussion nil)
+        ) ) }}
+      {{ end }}
+
+      {{ if $hasContext }}
+        {{ $S.Set "structure" ( $S.Get "structure" | append (dict "block" "context" "items" $ctx) ) }}
+      {{ end }}
+
+      {{ if or $hasGen $hasTgt $hasExt }}
+        {{ $S.Set "structure" ( $S.Get "structure" | append (dict
+          "block" "questions" "general" $gen "targeted" $tgt "extension" $ext
+        ) ) }}
+      {{ end }}
+
+      {{ if $hasVocab }}
+        {{ $S.Set "structure" ( $S.Get "structure" | append (dict "block" "key_vocabulary" "items" $v) ) }}
+      {{ end }}
+
+      {{ if $hasFurther }}
+        {{ $S.Set "structure" ( $S.Get "structure" | append (dict "block" "further_context" "items" $further) ) }}
+      {{ end }}
+
+      {{ partial "composer/render-structure.html" (dict
+        "structure" ($S.Get "structure")
+        "Page"      .
+        "page"      .
+        "Site"      (site)
+      ) }}
+    {{ end }}
+  </div>
+
+  <footer class="post-footer">
+    {{ if templates.Exists "partials/post-tags.html" }}
+      {{ partial "post-tags.html" . }}
+    {{ else }}
+      {{ with .Params.tags }}
+        <ul class="post-tags">
+          {{ range . }}<li><a href="{{ "tags/" | relLangURL }}{{ . | urlize }}/">{{ . }}</a></li>{{ end }}
+        </ul>
+      {{ end }}
+    {{ end }}
+  </footer>
+</article>
+{{ end }}

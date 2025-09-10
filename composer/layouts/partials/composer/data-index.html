@@ -1,0 +1,34 @@
+{{/* Build an index of lessons by id, and shared lookups per subject. Cached. */}}
+{{ $lessons := dict }}
+{{ $shared  := dict }}
+
+{{ range $subject, $tree := site.Data }}
+  {{/* Only treat folders that look like a subject (must have "units") */}}
+  {{ if and (reflect.IsMap $tree) (isset $tree "units") }}
+    {{/* shared/context + shared/vocab (may be missing) */}}
+    {{ $sctx := dict }}
+    {{ if and (isset $tree "shared") (isset $tree.shared "context") }}
+      {{ $sctx = $tree.shared.context }}
+    {{ end }}
+    {{ $svoc := dict }}
+    {{ if and (isset $tree "shared") (isset $tree.shared "vocab") }}
+      {{ $svoc = $tree.shared.vocab }}
+    {{ end }}
+    {{ $shared = merge $shared (dict $subject (dict "context" $sctx "vocab" $svoc)) }}
+
+    {{/* Walk all unit files and gather lessons (supports [ ... ] or {lessons:[...]}) */}}
+    {{ range $unitName, $unitFile := $tree.units }}
+      {{ $list := slice }}
+      {{ if (reflect.IsSlice $unitFile) }}{{ $list = $unitFile }}{{ end }}
+      {{ if and (reflect.IsMap $unitFile) (isset $unitFile "lessons") }}{{ $list = $unitFile.lessons }}{{ end }}
+      {{ range $list }}
+        {{ $L := . }}
+        {{ with $L.id }}
+          {{ $lessons = merge $lessons (dict $L.id $L) }}
+        {{ end }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+
+{{ return (dict "lessons" $lessons "shared" $shared) }}

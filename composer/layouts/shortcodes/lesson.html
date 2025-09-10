@@ -1,0 +1,86 @@
+{{/* lesson shortcode: {{< lesson id="mansfield:bliss-opening" >}} */}}
+
+{{ $id := .Get "id" }}
+{{ if not $id }}<p style="color:red">lesson: missing id</p>{{ return }}{{ end }}
+
+{{/* load lessons.csv as []map */}}
+{{ $lrows := resources.Get "lessons/lessons.csv" | transform.Unmarshal }}
+{{ $lessons := slice }}{{ $lh := index $lrows 0 }}
+{{ range $i, $r := $lrows }}{{ if lt $i 1 }}{{ continue }}{{ end }}
+  {{ $m := dict }}
+  {{ range $j, $h := $lh }}
+    {{ $m = merge $m (dict (strings.Trim $h " \t\r\n") (strings.Trim (index $r $j) " \t\r\n")) }}
+  {{ end }}
+  {{ $lessons = $lessons | append $m }}
+{{ end }}
+{{ $lesson := dict }}{{ range $lessons }}{{ if eq (index . "id") $id }}{{ $lesson = . }}{{ end }}{{ end }}
+{{ if eq (len $lesson) 0 }}<p style="color:red">Lesson not found: {{$id}}</p>{{ return }}{{ end }}
+
+{{/* load & filter questions */}}
+{{ $qrows := resources.Get "lessons/questions.csv" | transform.Unmarshal }}
+{{ $questions := slice }}{{ $qh := index $qrows 0 }}
+{{ range $i, $r := $qrows }}{{ if lt $i 1 }}{{ continue }}{{ end }}
+  {{ $m := dict }}
+  {{ range $j, $h := $qh }}
+    {{ $m = merge $m (dict (strings.Trim $h " \t\r\n") (strings.Trim (index $r $j) " \t\r\n")) }}
+  {{ end }}
+  {{ if eq (index $m "lesson_id") $id }}{{ $questions = $questions | append $m }}{{ end }}
+{{ end }}
+{{ $general := where $questions "kind" "general" }}
+{{ $targeted := where $questions "kind" "targeted" }}
+{{ $extension := where $questions "kind" "extension" }}
+{{ $byRef := dict }}
+{{ range sort $targeted "ord" "asc" }}
+  {{ $ref := (index . "ref") | default "" }}
+  {{ $list := (index $byRef $ref) | default (slice) }}
+  {{ $byRef = merge $byRef (dict $ref ( $list | append (index . "text") )) }}
+{{ end }}
+
+{{/* build structure */}}
+{{ $S := newScratch }}{{ $S.Set "structure" (slice) }}
+
+{{ with (index $lesson "image_url") }}
+  {{ $img := dict "url" . "alt" (index $lesson "image_alt") }}
+  {{ $S.Set "structure" ( $S.Get "structure" | append (dict "block" "hero" "image" $img) ) }}
+{{ end }}
+{{ if or (index $lesson "intro_reading") (index $lesson "intro_discussion") }}
+  {{ $S.Set "structure" ( $S.Get "structure" | append (dict "block" "introduction" "reading" (index $lesson "intro_reading") "discussion" (index $lesson "intro_discussion")) ) }}
+{{ end }}
+
+{{ $ctx := slice }}
+{{ with (index $lesson "context_refs") }}
+  {{ range (split . ";") }}
+    {{ with (index site.Data.shared.context (strings.Trim . " \t\r\n")) }}{{ $ctx = $ctx | append . }}{{ end }}
+  {{ end }}
+{{ end }}
+{{ if gt (len $ctx) 0 }}
+  {{ $S.Set "structure" ( $S.Get "structure" | append (dict "block" "context" "items" $ctx) ) }}
+{{ end }}
+
+{{ $qgen := slice }}{{ range sort $general "ord" "asc" }}{{ $qgen = $qgen | append (index . "text") }}{{ end }}
+{{ $qtarg := slice }}{{ range $ref, $items := $byRef }}{{ $qtarg = $qtarg | append (dict "ref" $ref "items" $items) }}{{ end }}
+{{ $qext := slice }}{{ range sort $extension "ord" "asc" }}{{ $qext = $qext | append (index . "text") }}{{ end }}
+{{ if or (len $qgen) (len $qtarg) (len $qext) }}
+  {{ $S.Set "structure" ( $S.Get "structure" | append (dict "block" "questions" "general" $qgen "targeted" $qtarg "extension" $qext) ) }}
+{{ end }}
+
+{{ $v := slice }}
+{{ with (index $lesson "vocab_use") }}
+  {{ range (split . ";") }}
+    {{ with (index site.Data.shared.vocab (strings.Trim . " \t\r\n")) }}{{ range . }}{{ $v = $v | append . }}{{ end }}{{ end }}
+  {{ end }}
+{{ end }}
+{{ with (index $lesson "vocab_extra") }}
+  {{ range (split . ";") }}{{ $t := strings.Trim . " \t\r\n" }}{{ if $t }}{{ $v = $v | append $t }}{{ end }}{{ end }}
+{{ end }}
+{{ if gt (len $v) 0 }}
+  {{ $S.Set "structure" ( $S.Get "structure" | append (dict "block" "key_vocabulary" "items" $v) ) }}
+{{ end }}
+
+{{ $html := partial "composer/render-structure.html" (dict
+  "structure" ($S.Get "structure")
+  "Page"      .Page
+  "page"      .Page
+  "Site"      (site)
+) }}
+{{ $html | safeHTML }}

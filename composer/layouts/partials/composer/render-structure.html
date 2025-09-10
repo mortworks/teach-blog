@@ -1,0 +1,10 @@
+{{- $blocks := .structure | default .Structure | default .Params.structure | default (slice) -}}
+{{- range $i, $b := $blocks -}}
+  {{- $bm := dict -}}
+  {{- if eq (printf "%T" $b) "string" -}}
+    {{- $bm = dict "block" $b -}}
+  {{- else -}}
+    {{- $bm = $b -}}
+  {{- end -}}
+  {{- partial "composer/render-block.html" (dict "block" $bm "Page" $.Page "page" $.page "Site" (site)) -}}
+{{- end -}}

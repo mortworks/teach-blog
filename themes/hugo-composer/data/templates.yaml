@@ -1,0 +1,13 @@
+demo-min:
+  # Block-objects template (tests render-structure.html path)
+  structure:
+    - block: prose
+      content: |
+        Hello from Composer (template path — block objects).
+
+demo-refs:
+  # Refs+anchors template (tests render-template.html path)
+  structure: [intro]
+  anchors:
+    intro: |
+      Hello from Composer (template path — refs + anchors).

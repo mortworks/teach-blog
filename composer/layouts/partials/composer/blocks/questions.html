@@ -1,0 +1,44 @@
+{{/* blocks/questions.html — sequential numbering across General, Targeted, Extension */}}
+{{ $gen := .block.general   | default (slice) }}
+{{ $tgt := .block.targeted  | default (slice) }}
+{{ $ext := .block.extension | default (slice) }}
+
+<section>
+  <h2 id="questions">Questions</h2>
+
+  {{/* Running total for ordered lists */}}
+  {{ $start := 0 }}
+
+  {{/* General */}}
+  {{ if gt (len $gen) 0 }}
+    <h3 id="questions-general">General</h3>
+    <ol start="{{ add $start 1 }}">
+      {{ range $gen }}<li>{{ . }}</li>{{ end }}
+    </ol>
+    {{ $start = add $start (len $gen) }}
+  {{ end }}
+
+  {{/* Targeted: [{ref, items:[...]}, ...] */}}
+  {{ if gt (len $tgt) 0 }}
+    <h3 id="questions-targeted">Targeted</h3>
+    {{ range $tgt }}
+      {{ $list := .items | default (slice) }}
+      {{ with .ref }}<h4 id="qref-{{ . | anchorize }}">{{ . }}</h4>{{ end }}
+      {{ if gt (len $list) 0 }}
+        <ol start="{{ add $start 1 }}">
+          {{ range $list }}<li>{{ . }}</li>{{ end }}
+        </ol>
+        {{ $start = add $start (len $list) }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+
+  {{/* Extension — now numbered and continues the sequence */}}
+  {{ if gt (len $ext) 0 }}
+    <h3 id="questions-extension">Extension</h3>
+    <ol start="{{ add $start 1 }}">
+      {{ range $ext }}<li>{{ . }}</li>{{ end }}
+    </ol>
+    {{ $start = add $start (len $ext) }}
+  {{ end }}
+</section>
