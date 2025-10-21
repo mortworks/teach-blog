@@ -7,3 +7,6 @@
 [submodule "composer"]
 	path = composer
 	url = git@github.com:mortworks/hugo-composer.git
+[submodule "themes/hugo-composer"]
+	path = themes/hugo-composer
+	url = https://github.com/mortworks/hugo-composer
